@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projeto Doações de Alimentos</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e6f4ea;
+      color: #2f4f4f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background-color: #2e7d32;
+      padding: 1rem 0;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(46,125,50,0.3);
+      display: none; /* só aparece depois do login */
+    }
+
+    nav a {
+      color: #a5d6a7;
+      margin: 0 20px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav a.active {
+      color: #c8e6c9;
+      text-shadow: 0 0 5px #a5d6a7;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background-color: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(46, 125, 50, 0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, select, textarea, button {
+      padding: 0.9rem 1.2rem;
+      border-radius: 8px;
+      border: 1.5px solid #a5d6a7;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 8px #81c784;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1b5e20;
+      box-shadow: 0 4px 12px rgba(27, 94, 32, 0.7);
+    }
+
+    .lista-doacoes h3, .lista-doacoes ul, #listaInventario h3 {
+      margin-top: 2rem;
+      color: #2e7d32;
+      font-weight: 600;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      background-color: #e8f5e9;
+      margin-bottom: 10px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: inset 0 0 8px #c8e6c9;
+      color: #1b5e20;
+      font-weight: 600;
+    }
+
+    section {
+      display: none;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    /* Notificações */
+    #notificacoes {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      max-width: 320px;
+      z-index: 1000;
+    }
+
+    #notificacoes div {
+      background: #2e7d32;
+      color: #c8e6c9;
+      padding: 14px 20px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(46, 125, 50, 0.4);
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      cursor: default;
+    }
+
+    /* Botão criar conta em login */
+    #btnCriarConta {
+      background-color: transparent;
+      border: none;
+      color: #2e7d32;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      text-decoration: underline;
+      font-size: 1rem;
+    }
+
+    /* Imagens da home */
+    #home img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 1rem 0;
+      box-shadow: 0 6px 12px rgba(46, 125, 50, 0.2);
+    }
+
+    /* Frase tocante na home */
+    #frase-tocante {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1b5e20;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a onclick="mostrarPagina('home')" class="active">Home</a>
+    <a onclick="mostrarPagina('agendamento')">Agendamento</a>
+    <a onclick="mostrarPagina('cadastroDoacao')">Cadastro de Doação</a>
+    <a onclick="mostrarPagina('inventario')">Inventário</a>
+    <a onclick="mostrarPagina('logout')">Sair</a>
+  </nav>
+
+  <!-- LOGIN - página inicial -->
+  <section id="login" class="active">
+    <div class="container">
+      <h2>Login</h2>
+      <form id="formLogin" class="formulario">
+        <label for="emailLogin">Email:</label>
+        <input type="email" id="emailLogin" required />
+
+        <label for="senhaLogin">Senha:</label>
+        <input type="password" id="senhaLogin" required />
+
+        <button type="submit">Entrar</button>
+      </form>
+      <button id="btnCriarConta">Criar conta</button>
+    </div>
+  </section>
+
+  <!-- CADASTRO DE USUÁRIO -->
+  <section id="cadastroUsuario">
+    <div class="container">
+      <h2>Cadastro de Usuário</h2>
+      <form id="formUsuario" class="formulario">
+        <label for="nomeUsuario">Nome:</label>
+        <input type="text" id="nomeUsuario" required />
+
+        <label for="emailUsuario">Email:</label>
+        <input type="email" id="emailUsuario" required />
+
+        <label for="senhaUsuario">Senha:</label>
+        <input type="password" id="senhaUsuario" required />
+
+        <label for="cepUsuario">CEP:</label>
+        <input type="text" id="cepUsuario" pattern="\d{5}-?\d{3}" required placeholder="Ex: 12345-678" />
+
+        <label for="tipoUsuario">Tipo de Usuário:</label>
+        <select id="tipoUsuario" required>
+          <option value="" disabled selected>Selecione</option>
+          <option value="Doador">Doador</option>
+          <option value="Beneficiário">Beneficiário</option>
+          <option value="Voluntário">Voluntário</option>
+        </select>
+
+        <button type="submit">Cadastrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="container">
+      <h2>Projeto Semeando Esperança</h2>
+      <div id="frase-tocante">
+        “Juntos semeamos mais que alimentos: cultivamos dignidade, esperança e solidariedade.”
+      </div>
+      <img src="https://comshalom.org/wp-content/uploads/2012/10/03/portal/esperanc3a7a.jpg" alt="Doação de alimentos" />
+    </div>
+  </section>
+
+  <!-- AGENDAMENTO -->
+  <section id="agendamento">
+    <div class="container">
+      <h2>Agendamento de Entrega ou Retirada</h2>
+      <form id="formAgendamento" class="formulario">
+        <label for="tipo">Tipo de agendamento:</label>
+        <select id="tipo" required>
+          <option value="" disabled selected>Selecione</option>
+          <option value="Entrega">Entrega</option>
+          <option value="Retirada">Retirada</option>
+        </select>
+
+        <label for="alimentoAg">Nome do Alimento:</label>
+        <input type="text" id="alimentoAg" required />
+
+        <label for="data">Data:</label>
+        <input type="date" id="data" required />
+
+        <label for="hora">Hora:</label>
+        <input type="time" id="hora" required />
+
+        <label for="local">Local:</label>
+        <input type="text" id="local" required />
+
+        <label for="observacoes">Observações (opcional):</label>
+        <textarea id="observacoes" rows="3"></textarea>
+
+        <button type="submit">Agendar</button>
+      </form>
+
+      <div class="lista-doacoes">
+        <h3>Agendamentos</h3>
+        <ul id="listaAgendamentos"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CADASTRO DE DOAÇÃO -->
+  <section id="cadastroDoacao">
+    <div class="container">
+      <h2>Cadastro de Doação</h2>
+      <form id="formDoacao" class="formulario">
+        <label for="nomeAlimento">Nome do Alimento:</label>
+        <input type="text" id="nomeAlimento" required />
+
+        <label for="quantidadeAlimento">Quantidade:</label>
+        <input type="number" id="quantidadeAlimento" min="1" required />
+
+        <label for="validadeAlimento">Validade:</label>
+        <input type="date" id="validadeAlimento" required />
+
+        <label for="observacaoDoacao">Observação (opcional):</label>
+        <textarea id="observacaoDoacao" rows="3"></textarea>
+
+        <button type="submit">Cadastrar Doação</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- INVENTÁRIO -->
+  <section id="inventario">
+    <div class="container">
+      <h2>Inventário de Doações</h2>
+      <button id="ordenarValidade" style="margin-bottom: 1rem; background-color:#1b5e20; border:none; color:#c8e6c9; padding:0.8rem 1.2rem; border-radius:8px; font-weight:600; cursor:pointer;">Ordenar por validade (mais urgente)</button>
+      <ul id="listaInventario"></ul>
+    </div>
+  </section>
+
+  <!-- Notificações -->
+  <div id="notificacoes"></div>
+
+  <script>
+    // Estado: lista de usuários, inventário, agendamentos
+    const usuarios = [];
+    let inventario = [];
+    let agendamentos = [];
+
+    // Mostrar página e gerenciar menu
+    function mostrarPagina(pagina) {
+      const sections = document.querySelectorAll('section');
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(pagina).classList.add('active');
+
+      // Menu só aparece se usuário estiver logado (home ou outras abas)
+      const nav = document.querySelector('nav');
+      if (pagina === 'login' || pagina === 'cadastroUsuario') {
+        nav.style.display = 'none';
+      } else {
+        nav.style.display = 'block';
+
+        const links = document.querySelectorAll('nav a');
+        links.forEach(link => link.classList.remove('active'));
+        const ativo = Array.from(links).find(link => link.getAttribute('onclick').includes(pagina));
+        if (ativo) ativo.classList.add('active');
+      }
+    }
+
+    // Notificações
+    function notificar(msg) {
+      const container = document.getElementById('notificacoes');
+      const notif = document.createElement('div');
+      notif.textContent = msg;
+      container.appendChild(notif);
+      setTimeout(() => {
+        notif.style.opacity = '0';
+        setTimeout(() => container.removeChild(notif), 500);
+      }, 3500);
+    }
+
+    // Login simples só para exemplo (não seguro)
+    document.getElementById('formLogin').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailLogin').value.trim();
+      const senha = document.getElementById('senhaLogin').value;
+
+      const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+      if (usuario) {
+        notificar(`Bem-vindo, ${usuario.nome}!`);
+        mostrarPagina('home');
+      } else {
+        notificar('Usuário ou senha inválidos!');
+      }
+    });
+
+    // Mostrar cadastro de usuário ao clicar no botão criar conta
+    document.getElementById('btnCriarConta').addEventListener('click', () => {
+      mostrarPagina('cadastroUsuario');
+    });
+
+    // Cadastro de usuário
+    document.getElementById('formUsuario').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nomeUsuario').value.trim();
+      const email = document.getElementById('emailUsuario').value.trim();
+      const senha = document.getElementById('senhaUsuario').value;
+      const cep = document.getElementById('cepUsuario').value.trim();
+      const tipo = document.getElementById('tipoUsuario').value;
+
+      if (usuarios.some(u => u.email === email)) {
+        notificar('Email já cadastrado!');
+        return;
+      }
+
+      usuarios.push({ nome, email, senha, cep, tipo });
+      notificar('Usuário cadastrado com sucesso!');
+      mostrarPagina('login');
+      document.getElementById('formUsuario').reset();
+    });
+
+    // Agendamento
+    document.getElementById('formAgendamento').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById('tipo').value;
+      const alimento = document.getElementById('alimentoAg').value.trim();
+      const data = document.getElementById('data').value;
+      const hora = document.getElementById('hora').value;
+      const local = document.getElementById('local').value.trim();
+      const obs = document.getElementById('observacoes').value.trim();
+
+      agendamentos.push({ tipo, alimento, data, hora, local, obs });
+      notificar('Agendamento criado com sucesso!');
+      atualizarListaAgendamentos();
+      document.getElementById('formAgendamento').reset();
+    });
+
+    function atualizarListaAgendamentos() {
+      const ul = document.getElementById('listaAgendamentos');
+      ul.innerHTML = '';
+      agendamentos.forEach((ag, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${ag.tipo} - ${ag.alimento} em ${ag.data} às ${ag.hora} no local: ${ag.local}` + (ag.obs ? ` (Obs: ${ag.obs})` : '');
+        ul.appendChild(li);
+      });
+    }
+
+    // Cadastro de doação - não aceita alimentos vencidos
+    document.getElementById('formDoacao').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nomeAlimento').value.trim();
+      const quantidade = parseInt(document.getElementById('quantidadeAlimento').value, 10);
+      const validade = document.getElementById('validadeAlimento').value;
+      const observacao = document.getElementById('observacaoDoacao').value.trim();
+
+      if (!validade) {
+        notificar('Informe a validade do alimento!');
+        return;
+      }
+
+      const hoje = new Date();
+      const dataValidade = new Date(validade + 'T23:59:59');
+
+      if (dataValidade < hoje) {
+        notificar('Alimento vencido não pode ser doado!');
+        return;
+      }
+
+      inventario.push({ nome, quantidade, validade: dataValidade, observacao });
+      notificar('Doação cadastrada com sucesso!');
+      document.getElementById('formDoacao').reset();
+      mostrarPagina('inventario');
+      atualizarInventario();
+    });
+
+    // Atualizar inventário
+    function atualizarInventario(ordenar = false) {
+      const ul = document.getElementById('listaInventario');
+      ul.innerHTML = '';
+
+      let lista = [...inventario];
+      if (ordenar) {
+        lista.sort((a, b) => a.validade - b.validade);
+      }
+
+      lista.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.nome} — Quantidade: ${item.quantidade} — Validade: ${item.validade.toLocaleDateString('pt-BR')}` + (item.observacao ? ` — Obs: ${item.observacao}` : '');
+        ul.appendChild(li);
+      });
+    }
+
+    document.getElementById('ordenarValidade').addEventListener('click', () => {
+      atualizarInventario(true);
+    });
+
+    // Logout
+    document.querySelector('nav a[onclick*="logout"]').addEventListener('click', () => {
+      mostrarPagina('login');
+      notificar('Você saiu do sistema.');
+    });
+
+  </script>
+
+</body>
+</html>
